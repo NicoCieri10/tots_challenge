@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:tots_challenge/counter/counter.dart';
 import 'package:tots_challenge/l10n/l10n.dart';
 
 class App extends StatefulWidget {
@@ -24,7 +23,7 @@ class _AppState extends State<App> {
       ),
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
-      home: const CounterPage(),
+      // home: const CounterPage(),
     );
   }
 

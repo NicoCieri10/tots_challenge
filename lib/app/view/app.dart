@@ -1,6 +1,10 @@
+import 'package:app_client/app_client.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:tots_challenge/home/home.dart';
 import 'package:tots_challenge/l10n/l10n.dart';
+import 'package:tots_challenge/login/login.dart';
 
 class App extends StatefulWidget {
   const App({super.key});
@@ -14,16 +18,21 @@ class _AppState extends State<App> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      theme: ThemeData(
-        appBarTheme: AppBarTheme(
-          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+    return MultiRepositoryProvider(
+      providers: [
+        RepositoryProvider<AppClient>(
+          create: (context) => AppClient(),
         ),
-        useMaterial3: true,
+      ],
+      child: MaterialApp.router(
+        theme: ThemeData(useMaterial3: true),
+        debugShowCheckedModeBanner: false,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        routerDelegate: _router.routerDelegate,
+        routeInformationProvider: _router.routeInformationProvider,
+        routeInformationParser: _router.routeInformationParser,
       ),
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
-      // home: const CounterPage(),
     );
   }
 
@@ -38,18 +47,18 @@ class _AppState extends State<App> {
       //   }
       //   return null;
       // },
-      // initialLocation: LoginPage.route,
+      initialLocation: LoginPage.route,
       routes: <GoRoute>[
-        // GoRoute(
-        //   path: LoginPage.route,
-        //   name: LoginPage.route,
-        //   builder: (context, state) => LoginPage(key: state.pageKey),
-        // ),
-        // GoRoute(
-        //   path: HomePage.route,
-        //   name: HomePage.route,
-        //   builder: (context, state) => HomePage(key: state.pageKey),
-        // ),
+        GoRoute(
+          path: LoginPage.route,
+          name: LoginPage.route,
+          builder: (context, state) => LoginPage(key: state.pageKey),
+        ),
+        GoRoute(
+          path: HomePage.route,
+          name: HomePage.route,
+          builder: (context, state) => HomePage(key: state.pageKey),
+        ),
       ],
     );
   }

@@ -52,7 +52,4 @@ class DataPersistenceRepository {
 class BoxKeys {
   /// The key to access to the user session information.
   static const isLoggedIn = 'is_logged_in';
-
-  /// The key to access to the blog posts saved.
-  static const offlinePosts = 'offline_posts';
 }

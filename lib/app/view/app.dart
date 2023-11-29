@@ -1,4 +1,5 @@
 import 'package:app_client/app_client.dart';
+import 'package:data_persistence/data_persistence.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -7,7 +8,12 @@ import 'package:tots_challenge/l10n/l10n.dart';
 import 'package:tots_challenge/login/login.dart';
 
 class App extends StatefulWidget {
-  const App({super.key});
+  const App({
+    required this.dataPersistenceRepository,
+    super.key,
+  });
+
+  final DataPersistenceRepository dataPersistenceRepository;
 
   @override
   State<App> createState() => _AppState();
@@ -23,6 +29,9 @@ class _AppState extends State<App> {
         RepositoryProvider<AppClient>(
           create: (context) => AppClient(),
         ),
+        RepositoryProvider(
+          create: (context) => widget.dataPersistenceRepository,
+        ),
       ],
       child: MaterialApp.router(
         theme: ThemeData(useMaterial3: true),
@@ -37,17 +46,16 @@ class _AppState extends State<App> {
   }
 
   GoRouter router(BuildContext context) {
-    // final isLogged = widget.dataPersistenceRepository.isLoggedIn;
+    final isLoggedIn = widget.dataPersistenceRepository.isLoggedIn;
 
     return GoRouter(
-      // redirect: (context, state) {
-      //   final isLogged = widget.dataPersistenceRepository.isLoggedIn;
-      //   if (!isLogged) {
-      //     return LoginPage.route;
-      //   }
-      //   return null;
-      // },
-      initialLocation: LoginPage.route,
+      redirect: (context, state) {
+        final isLoggedIn = widget.dataPersistenceRepository.isLoggedIn;
+        if (!isLoggedIn) return LoginPage.route;
+
+        return null;
+      },
+      initialLocation: isLoggedIn ? HomePage.route : LoginPage.route,
       routes: <GoRoute>[
         GoRoute(
           path: LoginPage.route,

@@ -1,7 +1,31 @@
 {
-    "@@locale": "es",
-    "counterAppBarTitle": "Contador",
-    "@counterAppBarTitle": {
-        "description": "Texto mostrado en la AppBar de la página del contador"
-    }
+  "@@locale": "es",
+  "login": "ENTRAR",
+  "mail": "Correo",
+  "password": "Contraseña",
+  "emailEmpty": "El campo de email esta vacío",
+  "emailInvalid": "El mail introducido no es válido",
+  "emptyPassword": "El campo de contraseña esta vacío",
+  "passwordTooShort": "La contraseña es demasiado corta",
+  "clients": "CLIENTES",
+  "search": "Buscar",
+  "addNew": "AÑADIR",
+  "edit": "Editar",
+  "delete": "Eliminar",
+  "loadMore": "CARGAR MÁS",
+  "addNewClient": "Añadir nuevo cliente",
+  "uploadImage": "Subir imagen",
+  "firstName": "Primer nombre*",
+  "lastName": "Apellido*",
+  "emailAddress": "Direccion de correo*",
+  "cancel": "Cancelar",
+  "save": "GUARDAR",
+  "editClient": "Editar cliente",
+  "fieldEmpty": "Campo vacío",
+  "clientCreatedSuccessfuly": "Cliente creado satisfactoriamente",
+  "randomError": "Ocurrió un error",
+  "loginSuccessfuly": "Inicio de sesión satisfactorio",
+  "credentialsError": "Las credenciales son incorrectas",
+  "noClientsFound": "No se encontraron clientes",
+  "retry": "Reintentar"
 }

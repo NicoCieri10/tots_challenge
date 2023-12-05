@@ -1,6 +1,3 @@
-/// Thrown if an exception occurs while making an dio request.
-class DioException implements Exception {}
-
 /// Thrown if an dio request returns a non-200 status code.
 class DioRequestFailure implements Exception {
   /// Class constructor.

@@ -8,6 +8,7 @@ import 'package:sizer/sizer.dart';
 import 'package:tots_challenge/home/home.dart';
 import 'package:tots_challenge/l10n/l10n.dart';
 import 'package:tots_challenge/login/login.dart';
+import 'package:tots_challenge/services/injector_service.dart';
 
 class App extends StatefulWidget {
   const App({
@@ -27,6 +28,7 @@ class _AppState extends State<App> {
   @override
   void initState() {
     super.initState();
+    InjectorService.init();
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
@@ -48,7 +50,7 @@ class _AppState extends State<App> {
       builder: (_, __, ___) => MultiRepositoryProvider(
         providers: [
           RepositoryProvider<AppClient>(
-            create: (context) => AppClient(),
+            create: (context) => AppClient(dioClient: getIt()),
           ),
           RepositoryProvider(
             create: (context) => widget.dataPersistenceRepository,

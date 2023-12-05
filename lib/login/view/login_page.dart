@@ -1,7 +1,12 @@
+import 'package:app_client/app_client.dart';
 import 'package:blur/blur.dart';
+import 'package:data_persistence/data_persistence.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:sizer/sizer.dart';
+import 'package:tots_challenge/common/validators.dart';
+import 'package:tots_challenge/home/home.dart';
 import 'package:tots_challenge/l10n/l10n.dart';
 import 'package:tots_challenge/login/cubit/login_cubit.dart';
 import 'package:ui/ui.dart';
@@ -14,7 +19,10 @@ class LoginPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => LoginCubit(),
+      create: (context) => LoginCubit(
+        appClient: context.read<AppClient>(),
+        dataPersistenceRepository: context.read<DataPersistenceRepository>(),
+      ),
       child: const LoginView(),
     );
   }
@@ -51,7 +59,29 @@ class _LoginViewState extends State<LoginView> {
           onTap: () => FocusScope.of(context).requestFocus(unfocus),
           child: Scaffold(
             body: BlocListener<LoginCubit, LoginState>(
-              listener: (context, state) {},
+              listener: (context, state) {
+                if (state.isBadCredentials) {
+                  // CustomSnackbar.showToast(
+                  //   context: context,
+                  //   status: SnackbarStatus.error,
+                  //   title: context.l10n.badCredentials,
+                  // );
+                } else if (state.isFailure) {
+                  // CustomSnackbar.showToast(
+                  //   context: context,
+                  //   status: SnackbarStatus.warning,
+                  //   title: context.l10n.unknownError,
+                  // );
+                } else if (state.isSuccess) {
+                  // CustomSnackbar.showToast(
+                  //   context: context,
+                  //   status: SnackbarStatus.success,
+                  //   title: context.l10n.validCredentials,
+                  // );
+
+                  context.goNamed(HomePage.route);
+                }
+              },
               child: Stack(
                 children: [
                   const _BlurBackground(),
@@ -77,6 +107,10 @@ class _LoginViewState extends State<LoginView> {
                           controller: _emailController,
                           autofillHints: const [AutofillHints.email],
                           hintText: context.l10n.mail,
+                          validator: (value) => Validators.validateEmail(
+                            email: value,
+                            context: context,
+                          ),
                         ),
                         SizedBox(height: 3.h),
                         CustomTextField(
@@ -84,16 +118,28 @@ class _LoginViewState extends State<LoginView> {
                           obscureText: _isObscure,
                           hintText: context.l10n.password,
                           autofillHints: const [AutofillHints.password],
+                          validator: (value) => Validators.validatePassword(
+                            password: value,
+                            context: context,
+                          ),
                           onPressed: () => setState(
                             () => _isObscure = !_isObscure,
                           ),
                         ),
                         SizedBox(height: 6.h),
-                        CustomButton(
-                          height: 40.sp,
-                          title: context.l10n.login,
-                          // loading: state.isAttempting,
-                          onPressed: () {},
+                        BlocBuilder<LoginCubit, LoginState>(
+                          buildWhen: (previous, current) {
+                            return previous.isAttempting !=
+                                current.isAttempting;
+                          },
+                          builder: (context, state) {
+                            return CustomButton(
+                              height: 40.sp,
+                              title: context.l10n.login,
+                              loading: state.isAttempting,
+                              onPressed: login,
+                            );
+                          },
                         ),
                         const Spacer(flex: 30),
                       ],
@@ -107,6 +153,15 @@ class _LoginViewState extends State<LoginView> {
       ),
     );
   }
+
+  void login() {
+    if (!(_formKey.currentState?.validate() ?? false)) return;
+
+    context.read<LoginCubit>().login(
+          email: _emailController.text,
+          password: _passwordController.text,
+        );
+  }
 }
 
 class _BlurBackground extends StatelessWidget {
@@ -117,7 +172,7 @@ class _BlurBackground extends StatelessWidget {
     return Blur(
       blur: 40,
       blurColor: Colors.white.withOpacity(0.5),
-      colorOpacity: 0.1,
+      colorOpacity: 0.05,
       child: const Stack(
         children: [
           BackgroundElement(

@@ -1,5 +1,4 @@
 import 'package:app_client/app_client.dart';
-import 'package:app_client/models/auth_user.dart';
 import 'package:dio/dio.dart' as dio;
 
 /// The JSON serializable model for the API response.
@@ -81,10 +80,9 @@ class AppClient {
         queryParameters: queryParams,
       );
       // return _handleResponse<T>(response);
-      // TODO: handle response
+      // TODO(NicoCieri10): handle response
       return response as T;
     } catch (e) {
-      print(e);
       throw dio.DioException(
         requestOptions: dio.RequestOptions(
           path: path,

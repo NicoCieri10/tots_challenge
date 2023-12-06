@@ -30,8 +30,8 @@ class LoginCubit extends Cubit<LoginState> {
       );
 
       await _dataPersistenceRepository.setLoggedIn(status: true);
-      // TODO: save user on data persistence
-      // await _dataPersistenceRepository.setUser(user: authUser);
+      await _dataPersistenceRepository.setUser(user: authUser);
+      await _dataPersistenceRepository.setToken(token: authUser.accessToken);
 
       emit(
         state.copyWith(status: LoginStatus.success),
@@ -41,5 +41,13 @@ class LoginCubit extends Cubit<LoginState> {
         state.copyWith(status: LoginStatus.failure),
       );
     }
+  }
+
+  Future<void> logout() async {
+    await _dataPersistenceRepository.logout();
+
+    emit(
+      state.copyWith(status: LoginStatus.initial),
+    );
   }
 }

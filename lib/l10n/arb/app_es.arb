@@ -25,7 +25,7 @@
   "clientCreatedSuccessfuly": "Cliente creado satisfactoriamente",
   "randomError": "Ocurrió un error",
   "loginSuccessfuly": "Inicio de sesión satisfactorio",
-  "credentialsError": "Las credenciales son incorrectas",
+  "badCredentials": "Las credenciales son inválidas",
   "noClientsFound": "No se encontraron clientes",
   "retry": "Reintentar"
 }

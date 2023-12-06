@@ -1,5 +1,4 @@
 import 'package:app_client/app_client.dart';
-import 'package:blur/blur.dart';
 import 'package:data_persistence/data_persistence.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -59,13 +58,13 @@ class _LoginViewState extends State<LoginView> {
           onTap: () => FocusScope.of(context).requestFocus(unfocus),
           child: Scaffold(
             body: BlocListener<LoginCubit, LoginState>(
-              listener: (context, state) {
+              listener: (context, state) async {
                 if (state.isBadCredentials) {
-                  // CustomSnackbar.showToast(
-                  //   context: context,
-                  //   status: SnackbarStatus.error,
-                  //   title: context.l10n.badCredentials,
-                  // );
+                  CustomSnackbar.showToast(
+                    context: context,
+                    status: SnackbarStatus.error,
+                    title: context.l10n.badCredentials,
+                  );
                 } else if (state.isFailure) {
                   // CustomSnackbar.showToast(
                   //   context: context,
@@ -84,7 +83,22 @@ class _LoginViewState extends State<LoginView> {
               },
               child: Stack(
                 children: [
-                  const _BlurBackground(),
+                  const BlurBackground(
+                    elements: [
+                      BackgroundElement(
+                        svg: 'assets/top-right-vector.svg',
+                        alignment: Alignment.topRight,
+                      ),
+                      BackgroundElement(
+                        svg: 'assets/center-left-vector.svg',
+                        alignment: Alignment.centerLeft,
+                      ),
+                      BackgroundElement(
+                        svg: 'assets/bottom-center-vector.svg',
+                        alignment: Alignment.bottomCenter,
+                      ),
+                    ],
+                  ),
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 11.w),
                     child: Column(
@@ -106,6 +120,7 @@ class _LoginViewState extends State<LoginView> {
                         CustomTextField(
                           controller: _emailController,
                           autofillHints: const [AutofillHints.email],
+                          keyboardType: TextInputType.emailAddress,
                           hintText: context.l10n.mail,
                           validator: (value) => Validators.validateEmail(
                             email: value,
@@ -161,35 +176,6 @@ class _LoginViewState extends State<LoginView> {
           email: _emailController.text,
           password: _passwordController.text,
         );
-  }
-}
-
-class _BlurBackground extends StatelessWidget {
-  const _BlurBackground();
-
-  @override
-  Widget build(BuildContext context) {
-    return Blur(
-      blur: 40,
-      blurColor: Colors.white.withOpacity(0.5),
-      colorOpacity: 0.05,
-      child: const Stack(
-        children: [
-          BackgroundElement(
-            svg: 'assets/top-right-vector.svg',
-            alignment: Alignment.topRight,
-          ),
-          BackgroundElement(
-            svg: 'assets/center-left-vector.svg',
-            alignment: Alignment.centerLeft,
-          ),
-          BackgroundElement(
-            svg: 'assets/bottom-center-vector.svg',
-            alignment: Alignment.bottomCenter,
-          ),
-        ],
-      ),
-    );
   }
 }
 

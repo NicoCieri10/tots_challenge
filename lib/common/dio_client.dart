@@ -7,7 +7,6 @@ class DioClient {
 
   Dio instance() {
     final options = BaseOptions(
-      // TODO: apply Env class
       baseUrl: 'https://agency-coda.uc.r.appspot.com',
       connectTimeout: const Duration(seconds: 10),
       receiveTimeout: const Duration(seconds: 6),

@@ -25,7 +25,7 @@
   "clientCreatedSuccessfuly": "Client created successfully",
   "randomError": "An error occurred",
   "loginSuccessfuly": "User logged successfully",
-  "credentialsError": "User credentials aren not correct",
+  "badCredentials": "The credentials are not valid",
   "noClientsFound": "No clients found",
   "retry": "Retry"
 }

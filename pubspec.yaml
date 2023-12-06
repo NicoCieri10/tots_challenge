@@ -10,7 +10,6 @@ dependencies:
   app_client:
     path: packages/app_client
   bloc: ^8.1.2
-  blur: ^3.1.0
   data_persistence:
     path: packages/data_persistence
   dio: ^5.4.0

@@ -75,12 +75,16 @@ class AppClient {
     final dio.Response<JSON> response;
 
     try {
-      response = await _dio.post<JSON>(
+      response = await _dio.post(
         path,
         data: body,
         queryParameters: queryParams,
       );
-    } catch (_) {
+      // return _handleResponse<T>(response);
+      // TODO: handle response
+      return response as T;
+    } catch (e) {
+      print(e);
       throw dio.DioException(
         requestOptions: dio.RequestOptions(
           path: path,
@@ -89,8 +93,6 @@ class AppClient {
         ),
       );
     }
-
-    return _handleResponse<T>(response);
   }
 
   T _handleResponse<T>(dio.Response<JSON> response) {

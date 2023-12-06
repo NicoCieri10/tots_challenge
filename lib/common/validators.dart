@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:tots_challenge/l10n/l10n.dart';
 
+/// Validators for the app
 class Validators {
-  const Validators._();
+  const Validators();
 
   /// Validates the email address
   static String? validateEmail({

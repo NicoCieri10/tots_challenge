@@ -66,18 +66,17 @@ class _LoginViewState extends State<LoginView> {
                     title: context.l10n.badCredentials,
                   );
                 } else if (state.isFailure) {
-                  // CustomSnackbar.showToast(
-                  //   context: context,
-                  //   status: SnackbarStatus.warning,
-                  //   title: context.l10n.unknownError,
-                  // );
+                  CustomSnackbar.showToast(
+                    context: context,
+                    status: SnackbarStatus.warning,
+                    title: context.l10n.randomError,
+                  );
                 } else if (state.isSuccess) {
-                  // CustomSnackbar.showToast(
-                  //   context: context,
-                  //   status: SnackbarStatus.success,
-                  //   title: context.l10n.validCredentials,
-                  // );
-
+                  CustomSnackbar.showToast(
+                    context: context,
+                    status: SnackbarStatus.success,
+                    title: context.l10n.loginSuccessfuly,
+                  );
                   context.goNamed(HomePage.route);
                 }
               },

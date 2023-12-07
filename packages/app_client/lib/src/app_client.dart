@@ -1,5 +1,7 @@
 import 'package:app_client/app_client.dart';
+import 'package:app_client/responses/response_model.dart';
 import 'package:dio/dio.dart' as dio;
+import 'package:dio/dio.dart';
 
 /// The JSON serializable model for the API response.
 typedef JSON = Map<String, dynamic>;
@@ -30,37 +32,78 @@ class AppClient {
 
     final response = await _post<JSON>(
       path,
-      body: {
+      data: {
         'email': email,
         'password': password,
       },
     );
 
     try {
-      return AuthUser.fromMap(response);
+      final responseModel = ResponseModel.fromMap(response);
+      if (responseModel.success) {
+        return AuthUser.fromMap(responseModel.response!);
+      } else {
+        throw DioRequestFailure(
+          responseModel.error!['code'] as int,
+          responseModel.error!['message'] as String,
+        );
+      }
     } on FormatException {
       throw const SpecifiedTypeNotMatchedException();
     }
   }
 
-  /// This method creates a new [].
-  Future<void> createClient({
-    required String title,
-    required String body,
+  /// This method creates a new [Client].
+  Future<Client> createClient({
+    required Client client,
+    required String token,
   }) async {
     const path = '$clientPath/save';
 
-    await _post<JSON>(
+    final response = await _post<JSON>(
       path,
-      body: {
-        'title': title,
-        'body': body,
-        'userId': 1,
-      },
+      options: {'Authorization': 'Bearer $token'},
+      data: client.toMap(),
     );
 
     try {
-      // return Post.fromMap(result);
+      final responseModel = ResponseModel.fromMap(response);
+      if (responseModel.success) {
+        return Client.fromMap(responseModel.response!);
+      } else {
+        throw DioRequestFailure(
+          responseModel.error!['code'] as int,
+          responseModel.error!['message'] as String,
+        );
+      }
+    } on FormatException {
+      throw const SpecifiedTypeNotMatchedException();
+    }
+  }
+
+  /// This method updates an existing [Client].
+  Future<Client> updateClient({
+    required Client client,
+    required String token,
+  }) async {
+    const path = '$clientPath/save';
+
+    final response = await _post<JSON>(
+      path,
+      options: {'Authorization': 'Bearer $token'},
+      data: client.toMap(),
+    );
+
+    try {
+      final responseModel = ResponseModel.fromMap(response);
+      if (responseModel.success) {
+        return Client.fromMap(responseModel.response!);
+      } else {
+        throw DioRequestFailure(
+          responseModel.error!['code'] as int,
+          responseModel.error!['message'] as String,
+        );
+      }
     } on FormatException {
       throw const SpecifiedTypeNotMatchedException();
     }
@@ -68,25 +111,25 @@ class AppClient {
 
   Future<T> _post<T>(
     String path, {
-    Map<String, dynamic>? body,
+    Map<String, dynamic>? data,
     Map<String, String>? queryParams,
+    Map<String, String>? options,
   }) async {
     final dio.Response<JSON> response;
 
     try {
       response = await _dio.post(
         path,
-        data: body,
+        data: data,
         queryParameters: queryParams,
+        options: Options(headers: options),
       );
-      // return _handleResponse<T>(response);
-      // TODO(NicoCieri10): handle response
-      return response as T;
+      return _handleResponse<T>(response);
     } catch (e) {
       throw dio.DioException(
         requestOptions: dio.RequestOptions(
           path: path,
-          data: body,
+          data: data,
           queryParameters: queryParams,
         ),
       );

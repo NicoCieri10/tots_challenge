@@ -38,7 +38,7 @@ class LoginCubit extends Cubit<LoginState> {
       );
     } catch (e) {
       emit(
-        state.copyWith(status: LoginStatus.failure),
+        state.copyWith(status: LoginStatus.badCredentials),
       );
     }
   }

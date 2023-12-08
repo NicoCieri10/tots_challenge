@@ -28,6 +28,8 @@ class _ClientModalState extends State<ClientModal> {
   final _formKey = GlobalKey<FormState>();
 
   final unfocus = FocusNode();
+  final lastnameFocus = FocusNode();
+  final emailFocus = FocusNode();
 
   final ImagePicker _picker = ImagePicker();
   XFile? image;
@@ -50,12 +52,15 @@ class _ClientModalState extends State<ClientModal> {
     _lastNameController.dispose();
     _emailController.dispose();
     unfocus.dispose();
+    lastnameFocus.dispose();
+    emailFocus.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final clientNull = widget.client == null;
+    final focus = FocusScope.of(context);
     return Center(
       child: Dialog(
         backgroundColor: Colors.transparent,
@@ -88,30 +93,35 @@ class _ClientModalState extends State<ClientModal> {
                 SizedBox(height: 11.sp),
                 CustomTextField(
                   controller: _firstNameController,
+                  hintText: context.l10n.firstName,
                   validator: (value) => Validators.emptyFieldValidator(
                     context: context,
                     value: value,
                   ),
-                  hintText: context.l10n.firstName,
+                  onFieldSubmitted: (_) => focus.requestFocus(lastnameFocus),
                 ),
                 SizedBox(height: 11.sp),
                 CustomTextField(
                   controller: _lastNameController,
+                  focusNode: lastnameFocus,
+                  hintText: context.l10n.lastName,
                   validator: (value) => Validators.emptyFieldValidator(
                     context: context,
                     value: value,
                   ),
-                  hintText: context.l10n.lastName,
+                  onFieldSubmitted: (_) => focus.requestFocus(emailFocus),
                 ),
                 SizedBox(height: 11.sp),
                 CustomTextField(
                   keyboardType: TextInputType.emailAddress,
+                  focusNode: emailFocus,
                   controller: _emailController,
+                  hintText: context.l10n.emailAddress,
                   validator: (value) => Validators.validateEmail(
                     context: context,
                     email: value,
                   ),
-                  hintText: context.l10n.emailAddress,
+                  onFieldSubmitted: (_) => submit(),
                 ),
                 const Spacer(),
                 _ButtonsRow(onPressed: submit),

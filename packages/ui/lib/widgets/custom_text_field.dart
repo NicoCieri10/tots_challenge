@@ -10,6 +10,8 @@ class CustomTextField extends StatelessWidget {
     this.validator,
     this.keyboardType,
     this.autofillHints,
+    this.onFieldSubmitted,
+    this.focusNode,
     super.key,
   });
 
@@ -20,6 +22,8 @@ class CustomTextField extends StatelessWidget {
   final TextEditingController controller;
   final TextInputType? keyboardType;
   final Iterable<String>? autofillHints;
+  final void Function(String)? onFieldSubmitted;
+  final FocusNode? focusNode;
 
   @override
   Widget build(BuildContext context) {
@@ -47,6 +51,8 @@ class CustomTextField extends StatelessWidget {
     );
     return TextFormField(
       decoration: decoration,
+      focusNode: focusNode,
+      onFieldSubmitted: onFieldSubmitted,
       autofillHints: autofillHints,
       keyboardType: keyboardType,
       controller: controller,

@@ -35,10 +35,14 @@ class LoginView extends StatefulWidget {
 }
 
 class _LoginViewState extends State<LoginView> {
-  final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+
   final unfocus = FocusNode();
+  final passwordFocus = FocusNode();
+
+  final _formKey = GlobalKey<FormState>();
+
   bool _isObscure = true;
 
   @override
@@ -46,16 +50,18 @@ class _LoginViewState extends State<LoginView> {
     _emailController.dispose();
     _passwordController.dispose();
     unfocus.dispose();
+    passwordFocus.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final focus = FocusScope.of(context);
     return Form(
       key: _formKey,
       child: AutofillGroup(
         child: GestureDetector(
-          onTap: () => FocusScope.of(context).requestFocus(unfocus),
+          onTap: () => focus.requestFocus(unfocus),
           child: Scaffold(
             body: BlocListener<LoginCubit, LoginState>(
               listener: (context, state) async {
@@ -125,11 +131,14 @@ class _LoginViewState extends State<LoginView> {
                             email: value,
                             context: context,
                           ),
+                          onFieldSubmitted: (_) =>
+                              focus.requestFocus(passwordFocus),
                         ),
                         SizedBox(height: 3.h),
                         CustomTextField(
                           controller: _passwordController,
                           obscureText: _isObscure,
+                          focusNode: passwordFocus,
                           hintText: context.l10n.password,
                           autofillHints: const [AutofillHints.password],
                           validator: (value) => Validators.validatePassword(
@@ -139,6 +148,7 @@ class _LoginViewState extends State<LoginView> {
                           onPressed: () => setState(
                             () => _isObscure = !_isObscure,
                           ),
+                          onFieldSubmitted: (p0) => login(),
                         ),
                         SizedBox(height: 6.h),
                         BlocBuilder<LoginCubit, LoginState>(

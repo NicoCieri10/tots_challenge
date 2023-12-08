@@ -52,7 +52,7 @@ class _AppState extends State<App> {
           RepositoryProvider<AppClient>(
             create: (context) => AppClient(dioClient: getIt()),
           ),
-          RepositoryProvider(
+          RepositoryProvider<DataPersistenceRepository>(
             create: (context) => widget.dataPersistenceRepository,
           ),
         ],

@@ -56,11 +56,12 @@ class DataPersistenceRepository {
       userDataBox.put(BoxKeys.userData, user);
 
   /// Get the clients data.
-  List<Client>? get clients => clientsBox.get(BoxKeys.clients) as List<Client>?;
+  List<Client>? get clients =>
+      (clientsBox.get(BoxKeys.clientList) as List?)?.cast<Client>();
 
   /// Updates the clients data.
   Future<void> setClients({List<Client>? clients}) async =>
-      clientsBox.put(BoxKeys.clients, clients);
+      clientsBox.put(BoxKeys.clientList, clients);
 
   /// Get the bearer token.
   String? get token => userSessionBox.get(BoxKeys.token) as String?;
@@ -105,5 +106,5 @@ class BoxKeys {
   static const userData = 'user_data';
 
   /// The key to access to the clients information.
-  static const clients = 'clients';
+  static const clientList = 'clientList';
 }

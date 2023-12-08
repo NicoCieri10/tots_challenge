@@ -65,7 +65,7 @@ class HomeCubit extends Cubit<HomeState> {
           page: 1,
         ),
       );
-    } on DioRequestFailure catch (_) {
+    } catch (_) {
       await InternetConnectionChecker().hasConnection
           ? emit(state.copyWith(status: HomeStatus.failure))
           : emit(state.copyWith(status: HomeStatus.offline));
@@ -94,7 +94,7 @@ class HomeCubit extends Cubit<HomeState> {
           page: page,
         ),
       );
-    } on DioRequestFailure catch (_) {
+    } catch (_) {
       await InternetConnectionChecker().hasConnection
           ? emit(state.copyWith(status: HomeStatus.failure))
           : emit(state.copyWith(status: HomeStatus.offline));
@@ -115,7 +115,7 @@ class HomeCubit extends Cubit<HomeState> {
       await getClients();
 
       emit(state.copyWith(status: HomeStatus.success));
-    } on DioRequestFailure catch (_) {
+    } catch (_) {
       await InternetConnectionChecker().hasConnection
           ? emit(state.copyWith(status: HomeStatus.failure))
           : emit(state.copyWith(status: HomeStatus.offline));
@@ -136,7 +136,7 @@ class HomeCubit extends Cubit<HomeState> {
       await getClients();
 
       emit(state.copyWith(status: HomeStatus.success));
-    } on DioRequestFailure catch (_) {
+    } catch (_) {
       await InternetConnectionChecker().hasConnection
           ? emit(state.copyWith(status: HomeStatus.failure))
           : emit(state.copyWith(status: HomeStatus.offline));
@@ -157,7 +157,7 @@ class HomeCubit extends Cubit<HomeState> {
       await getClients();
 
       emit(state.copyWith(status: HomeStatus.success));
-    } on DioRequestFailure catch (_) {
+    } catch (_) {
       await InternetConnectionChecker().hasConnection
           ? emit(state.copyWith(status: HomeStatus.failure))
           : emit(state.copyWith(status: HomeStatus.offline));

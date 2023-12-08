@@ -27,5 +27,6 @@
   "loginSuccessfuly": "Inicio de sesión satisfactorio",
   "badCredentials": "Las credenciales son inválidas",
   "noClientsFound": "No se encontraron clientes",
+  "refreshClients": "Refrescar clientes",
   "retry": "Reintentar"
 }

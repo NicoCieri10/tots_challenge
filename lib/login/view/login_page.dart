@@ -149,9 +149,15 @@ class _LoginViewState extends State<LoginView> {
                           builder: (context, state) {
                             return CustomButton(
                               height: 40.sp,
-                              title: context.l10n.login,
                               loading: state.isAttempting,
                               onPressed: login,
+                              child: Text(
+                                context.l10n.login,
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 11.sp,
+                                ),
+                              ),
                             );
                           },
                         ),

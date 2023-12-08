@@ -64,12 +64,76 @@ class HomeCubit extends Cubit<HomeState> {
         state.copyWith(
           status: HomeStatus.success,
           clients: newClients,
+          page: 1,
         ),
       );
     } on DioRequestFailure catch (_) {
       await InternetConnectionChecker().hasConnection
           ? emit(state.copyWith(status: HomeStatus.failure))
           : emit(state.copyWith(status: HomeStatus.offline));
+    }
+  }
+
+  Future<void> getMoreClients(int page) async {
+    if (state.isOffline) return;
+    emit(
+      state.copyWith(status: HomeStatus.loadingMore),
+    );
+
+    try {
+      final newClients = await _appClient.getClients(
+        token: _dataPersistenceRepository.token!,
+        page: page.toString(),
+      );
+
+      emit(
+        state.copyWith(
+          status: HomeStatus.success,
+          clients: newClients,
+          page: page,
+        ),
+      );
+    } on DioRequestFailure catch (_) {
+      await InternetConnectionChecker().hasConnection
+          ? emit(state.copyWith(status: HomeStatus.failure))
+          : emit(state.copyWith(status: HomeStatus.offline));
+    }
+  }
+
+  Future<void> createClient(Client? client) async {}
+
+  Future<void> updateClient(Client? client) async {}
+
+  Future<void> deleteClient(Client? client) async {}
+
+  void searchClient(String query) {
+    emit(
+      state.copyWith(status: HomeStatus.attempting),
+    );
+
+    if (query.isEmpty) {
+      emit(
+        state.copyWith(
+          status: HomeStatus.success,
+          filteredClients: state.clients,
+        ),
+      );
+    } else {
+      final filteredClients = state.clients
+          .where(
+            (client) =>
+                '${client.firstname ?? ''} ${client.lastname ?? ''} ${client.email ?? ''}'
+                    .toLowerCase()
+                    .contains(query.toLowerCase()),
+          )
+          .toList();
+
+      emit(
+        state.copyWith(
+          status: HomeStatus.success,
+          filteredClients: filteredClients,
+        ),
+      );
     }
   }
 }

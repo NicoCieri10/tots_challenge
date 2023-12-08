@@ -27,5 +27,6 @@
   "loginSuccessfuly": "User logged successfully",
   "badCredentials": "The credentials are not valid",
   "noClientsFound": "No clients found",
+  "refreshClients": "Refresh clients",
   "retry": "Retry"
 }

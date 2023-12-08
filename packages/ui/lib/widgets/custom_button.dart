@@ -1,20 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:sizer/sizer.dart';
 
 class CustomButton extends StatelessWidget {
   const CustomButton({
-    // required this.width,
     required this.height,
-    required this.title,
+    required this.child,
     this.loading = false,
     this.onPressed,
     super.key,
   });
 
   final void Function()? onPressed;
-  // final double width;
   final double height;
-  final String title;
+  final Widget child;
   final bool loading;
 
   @override
@@ -26,20 +23,13 @@ class CustomButton extends StatelessWidget {
       child: Container(
         alignment: Alignment.center,
         height: height,
-        // width: width,
         decoration: BoxDecoration(
           color: const Color(0xFF0D1111),
           borderRadius: BorderRadius.circular(34),
         ),
         child: loading
             ? const CircularProgressIndicator(color: Colors.white)
-            : Text(
-                title,
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 11.sp,
-                ),
-              ),
+            : child,
       ),
     );
   }

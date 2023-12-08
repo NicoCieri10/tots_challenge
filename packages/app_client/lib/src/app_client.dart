@@ -1,5 +1,5 @@
 import 'package:app_client/app_client.dart';
-import 'package:app_client/responses/response_model.dart';
+import 'package:app_client/responses/responses.dart';
 import 'package:dio/dio.dart' as dio;
 import 'package:dio/dio.dart';
 
@@ -39,7 +39,7 @@ class AppClient {
     );
 
     try {
-      final responseModel = ResponseModel.fromMap(response);
+      final responseModel = BaseResponse.fromMap(response);
 
       if (responseModel.success) {
         return AuthUser.fromMap(responseModel.response!);
@@ -55,28 +55,30 @@ class AppClient {
   }
 
   /// This method is used to get the [Client] list.
-  Future<List<Client>?> getClients({required String token}) async {
+  Future<List<Client>?> getClients({
+    required String token,
+    String page = '1',
+    String limit = '5',
+  }) async {
     const path = '$clientPath/list';
 
-    final response = await _post<JSON>(
+    final clientsResponse = await _post<JSON>(
       path,
       options: {'Authorization': 'Bearer $token'},
-      queryParams: {'page': '1'},
+      queryParams: {
+        'page': page,
+        'limit': limit,
+      },
     );
 
     try {
-      final responseModel = ResponseModel.fromMap(response);
+      final response = ListClientsResponse.fromMap(clientsResponse);
 
-      if (responseModel.success) {
-        // return (responseModel.response?.data as List<Map<String, dynamic>>)
-        //     .map(Client.fromMap)
-        //     .toList();
-        return [];
-      }
+      if (response.success) return response.response?.clients?.toList();
 
       throw DioRequestFailure(
-        responseModel.error!['code'] as int,
-        responseModel.error!['message'] as String,
+        response.error!['code'] as int,
+        response.error!['message'] as String,
       );
     } on FormatException {
       throw const SpecifiedTypeNotMatchedException();
@@ -97,7 +99,7 @@ class AppClient {
     );
 
     try {
-      final responseModel = ResponseModel.fromMap(response);
+      final responseModel = BaseResponse.fromMap(response);
       if (responseModel.success) return Client.fromMap(responseModel.response!);
 
       throw DioRequestFailure(
@@ -123,7 +125,7 @@ class AppClient {
     );
 
     try {
-      final responseModel = ResponseModel.fromMap(response);
+      final responseModel = BaseResponse.fromMap(response);
 
       if (responseModel.success) return Client.fromMap(responseModel.response!);
 
@@ -149,7 +151,7 @@ class AppClient {
     );
 
     try {
-      final responseModel = ResponseModel.fromMap(response);
+      final responseModel = BaseResponse.fromMap(response);
 
       if (responseModel.success) return true;
 

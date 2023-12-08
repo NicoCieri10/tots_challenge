@@ -102,6 +102,7 @@ class _HomeBody extends StatelessWidget {
                   ),
                   SizedBox(height: 2.5.h),
                   Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
                         context.l10n.clients,
@@ -112,6 +113,12 @@ class _HomeBody extends StatelessWidget {
                           letterSpacing: 1.5,
                         ),
                       ),
+                      if (state.isOffline)
+                        Icon(
+                          Icons.wifi_off_rounded,
+                          color: Colors.red,
+                          size: 20.sp,
+                        ),
                     ],
                   ),
                   SizedBox(height: 2.h),
@@ -306,39 +313,39 @@ class _RefreshWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        SizedBox(
-          width: double.infinity,
-          child: Text(
-            context.l10n.randomError,
-            textAlign: TextAlign.center,
-            style: const TextStyle(
-              fontSize: 26,
+    return Expanded(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          SizedBox(
+            width: double.infinity,
+            child: Text(
+              context.l10n.randomError,
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 20.sp),
             ),
           ),
-        ),
-        TextButton(
-          onPressed: context.read<HomeCubit>().refresh,
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                context.l10n.refreshClients.toUpperCase(),
-                style: const TextStyle(
-                  fontSize: 16,
+          TextButton(
+            onPressed: context.read<HomeCubit>().refresh,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  context.l10n.refreshClients.toUpperCase(),
+                  style: TextStyle(
+                    fontSize: 12.sp,
+                    color: Colors.blueAccent,
+                  ),
+                ),
+                const Icon(
+                  Icons.refresh,
                   color: Colors.blueAccent,
                 ),
-              ),
-              const Icon(
-                Icons.refresh,
-                color: Colors.blueAccent,
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

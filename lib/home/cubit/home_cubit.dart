@@ -31,6 +31,7 @@ class HomeCubit extends Cubit<HomeState> {
         state.copyWith(
           status: HomeStatus.offline,
           clients: clients,
+          filteredClients: clients,
         ),
       );
     } catch (e) {
@@ -53,6 +54,8 @@ class HomeCubit extends Cubit<HomeState> {
       final newClients = await _appClient.getClients(
         token: _dataPersistenceRepository.token!,
       );
+
+      await _dataPersistenceRepository.setClients(clients: newClients);
 
       emit(
         state.copyWith(
@@ -80,6 +83,8 @@ class HomeCubit extends Cubit<HomeState> {
         token: _dataPersistenceRepository.token!,
         page: page.toString(),
       );
+
+      await _dataPersistenceRepository.setClients(clients: newClients);
 
       emit(
         state.copyWith(

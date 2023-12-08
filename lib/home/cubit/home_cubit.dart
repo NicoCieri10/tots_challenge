@@ -18,9 +18,7 @@ class HomeCubit extends Cubit<HomeState> {
   final AppClient _appClient;
 
   Future<void> init() async {
-    emit(
-      state.copyWith(status: HomeStatus.attempting),
-    );
+    emit(state.copyWith(status: HomeStatus.attempting));
 
     try {
       final result = await InternetConnectionChecker().hasConnection;
@@ -36,9 +34,7 @@ class HomeCubit extends Cubit<HomeState> {
         ),
       );
     } catch (e) {
-      emit(
-        state.copyWith(status: HomeStatus.failure),
-      );
+      emit(state.copyWith(status: HomeStatus.failure));
     }
   }
 
@@ -51,9 +47,7 @@ class HomeCubit extends Cubit<HomeState> {
 
   Future<void> getClients() async {
     if (state.isOffline) return;
-    emit(
-      state.copyWith(status: HomeStatus.loadingMore),
-    );
+    emit(state.copyWith(status: HomeStatus.attempting));
 
     try {
       final newClients = await _appClient.getClients(
@@ -64,6 +58,7 @@ class HomeCubit extends Cubit<HomeState> {
         state.copyWith(
           status: HomeStatus.success,
           clients: newClients,
+          filteredClients: newClients,
           page: 1,
         ),
       );
@@ -90,6 +85,7 @@ class HomeCubit extends Cubit<HomeState> {
         state.copyWith(
           status: HomeStatus.success,
           clients: newClients,
+          filteredClients: newClients,
           page: page,
         ),
       );
@@ -100,16 +96,71 @@ class HomeCubit extends Cubit<HomeState> {
     }
   }
 
-  Future<void> createClient(Client? client) async {}
+  Future<void> createClient(Client? client) async {
+    if (state.isOffline) return;
 
-  Future<void> updateClient(Client? client) async {}
+    emit(state.copyWith(status: HomeStatus.attempting));
 
-  Future<void> deleteClient(Client? client) async {}
+    try {
+      await _appClient.createClient(
+        token: _dataPersistenceRepository.token!,
+        client: client!,
+      );
+
+      await getClients();
+
+      emit(state.copyWith(status: HomeStatus.success));
+    } on DioRequestFailure catch (_) {
+      await InternetConnectionChecker().hasConnection
+          ? emit(state.copyWith(status: HomeStatus.failure))
+          : emit(state.copyWith(status: HomeStatus.offline));
+    }
+  }
+
+  Future<void> updateClient(Client? client) async {
+    if (state.isOffline) return;
+
+    emit(state.copyWith(status: HomeStatus.attempting));
+
+    try {
+      await _appClient.updateClient(
+        token: _dataPersistenceRepository.token!,
+        client: client!,
+      );
+
+      await getClients();
+
+      emit(state.copyWith(status: HomeStatus.success));
+    } on DioRequestFailure catch (_) {
+      await InternetConnectionChecker().hasConnection
+          ? emit(state.copyWith(status: HomeStatus.failure))
+          : emit(state.copyWith(status: HomeStatus.offline));
+    }
+  }
+
+  Future<void> deleteClient(Client client) async {
+    if (state.isOffline) return;
+
+    emit(state.copyWith(status: HomeStatus.attempting));
+
+    try {
+      await _appClient.removeClient(
+        token: _dataPersistenceRepository.token!,
+        id: client.id.toString(),
+      );
+
+      await getClients();
+
+      emit(state.copyWith(status: HomeStatus.success));
+    } on DioRequestFailure catch (_) {
+      await InternetConnectionChecker().hasConnection
+          ? emit(state.copyWith(status: HomeStatus.failure))
+          : emit(state.copyWith(status: HomeStatus.offline));
+    }
+  }
 
   void searchClient(String query) {
-    emit(
-      state.copyWith(status: HomeStatus.attempting),
-    );
+    emit(state.copyWith(status: HomeStatus.attempting));
 
     if (query.isEmpty) {
       emit(
@@ -121,10 +172,11 @@ class HomeCubit extends Cubit<HomeState> {
     } else {
       final filteredClients = state.clients
           .where(
-            (client) =>
-                '${client.firstname ?? ''} ${client.lastname ?? ''} ${client.email ?? ''}'
-                    .toLowerCase()
-                    .contains(query.toLowerCase()),
+            (client) => '''
+${client.firstname ?? ''} ${client.lastname ?? ''} ${client.email ?? ''}
+'''
+                .toLowerCase()
+                .contains(query.toLowerCase()),
           )
           .toList();
 

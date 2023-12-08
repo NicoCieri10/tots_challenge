@@ -16,12 +16,10 @@ class Validators {
       r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+",
     );
 
-    if (value == null || value.isEmpty) {
-      return context.l10n.emailEmpty;
-    }
-    if (!emailRegExp.hasMatch(value)) {
-      return context.l10n.emailInvalid;
-    }
+    if (value == null || value.isEmpty) return context.l10n.emailEmpty;
+
+    if (!emailRegExp.hasMatch(value)) return context.l10n.emailInvalid;
+
     return null;
   }
 
@@ -30,12 +28,19 @@ class Validators {
     required BuildContext context,
     String? password,
   }) {
-    if (password == null || password.isEmpty) {
-      return context.l10n.emptyPassword;
-    }
-    if (password.length < 8) {
-      return context.l10n.passwordTooShort;
-    }
+    if (password == null || password.isEmpty) return context.l10n.emptyPassword;
+
+    if (password.length < 8) return context.l10n.passwordTooShort;
+
+    return null;
+  }
+
+  static String? emptyFieldValidator({
+    required BuildContext context,
+    String? value,
+  }) {
+    if (value == null || value.isEmpty) return context.l10n.fieldEmpty;
+
     return null;
   }
 }

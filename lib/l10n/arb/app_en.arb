@@ -28,5 +28,7 @@
   "badCredentials": "The credentials are not valid",
   "noClientsFound": "No clients found",
   "refreshClients": "Refresh clients",
-  "retry": "Retry"
+  "retry": "Retry",
+  "deleteClient": "Delete client",
+  "deleteClientQuestion": "Are you sure you want to delete this client? This action cannot be undone and will be permanent."
 }

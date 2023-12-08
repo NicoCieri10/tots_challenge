@@ -205,7 +205,6 @@ class _NewClientButton extends StatelessWidget {
         ),
         onPressed: () async {
           await showDialog<Client?>(
-            barrierColor: Colors.transparent,
             context: context,
             builder: (_) => const ClientModal(),
           ).then((client) {
@@ -280,9 +279,12 @@ class _ClientList extends StatelessWidget {
     if (clients.isEmpty) {
       return Expanded(
         child: Center(
-          child: Text(
-            context.l10n.noClientsFound,
-            style: TextStyle(fontSize: 20.sp),
+          child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            child: Text(
+              context.l10n.noClientsFound,
+              style: TextStyle(fontSize: 20.sp),
+            ),
           ),
         ),
       );

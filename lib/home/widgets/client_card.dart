@@ -1,6 +1,7 @@
 import 'package:app_client/app_client.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:sizer/sizer.dart';
 import 'package:tots_challenge/home/cubit/home_cubit.dart';
 import 'package:tots_challenge/home/widgets/widgets.dart';
@@ -57,14 +58,31 @@ class _MenuButton extends StatelessWidget {
       onSelected: (PopupOptions option) async {
         if (option == PopupOptions.edit) {
           await showDialog<Client?>(
-            barrierColor: Colors.transparent,
             context: context,
             builder: (_) => ClientModal(client: client),
           ).then((client) {
             if (client != null) cubit.updateClient(client);
           });
         } else {
-          await cubit.deleteClient(client);
+          await showDialog<bool?>(
+            context: context,
+            builder: (_) => AlertDialog(
+              title: Text(context.l10n.deleteClient),
+              content: Text(context.l10n.deleteClientQuestion),
+              actions: [
+                TextButton(
+                  onPressed: context.pop,
+                  child: Text(context.l10n.cancel),
+                ),
+                TextButton(
+                  onPressed: () => context.pop(true),
+                  child: Text(context.l10n.delete),
+                ),
+              ],
+            ),
+          ).then((delete) {
+            if (delete ?? false) cubit.deleteClient(client);
+          });
         }
       },
       itemBuilder: (context) => [

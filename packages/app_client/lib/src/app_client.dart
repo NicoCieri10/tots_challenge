@@ -145,15 +145,15 @@ class AppClient {
   }) async {
     final path = '$clientPath/remove/$id';
 
-    final response = await _post<JSON>(
+    final response = await _delete<JSON>(
       path,
       options: {'Authorization': 'Bearer $token'},
     );
 
     try {
-      final responseModel = BaseResponse.fromMap(response);
+      final responseModel = DeleteResponse.fromMap(response);
 
-      if (responseModel.success) return true;
+      if (responseModel.success) return responseModel.response ?? false;
 
       throw DioRequestFailure(
         responseModel.error!['code'] as int,
@@ -174,6 +174,33 @@ class AppClient {
 
     try {
       response = await _dio.post(
+        path,
+        data: data,
+        queryParameters: queryParams,
+        options: Options(headers: options),
+      );
+      return _handleResponse<T>(response);
+    } catch (e) {
+      throw dio.DioException(
+        requestOptions: dio.RequestOptions(
+          path: path,
+          data: data,
+          queryParameters: queryParams,
+        ),
+      );
+    }
+  }
+
+  Future<T> _delete<T>(
+    String path, {
+    Map<String, dynamic>? data,
+    Map<String, String>? queryParams,
+    Map<String, String>? options,
+  }) async {
+    final dio.Response<JSON> response;
+
+    try {
+      response = await _dio.delete(
         path,
         data: data,
         queryParameters: queryParams,

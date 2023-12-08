@@ -28,5 +28,7 @@
   "badCredentials": "Las credenciales son inválidas",
   "noClientsFound": "No se encontraron clientes",
   "refreshClients": "Refrescar clientes",
-  "retry": "Reintentar"
+  "retry": "Reintentar",
+  "deleteClient": "Eliminar cliente",
+  "deleteClientQuestion": "¿Está seguro que desea eliminar el cliente seleccionado? Esta acción no es reversible y será permanente."
 }

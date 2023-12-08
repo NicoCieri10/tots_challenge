@@ -19,7 +19,7 @@ class HomePage extends StatelessWidget {
       create: (context) => HomeCubit(
         appClient: context.read<AppClient>(),
         dataPersistenceRepository: context.read<DataPersistenceRepository>(),
-      ),
+      )..init(),
       child: const HomeView(),
     );
   }
@@ -64,132 +64,177 @@ class _HomeViewState extends State<HomeView> {
                 }
               },
               builder: (context, state) {
-                return SafeArea(
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(
-                      vertical: 2.h,
-                      horizontal: 8.w,
-                    ),
-                    child: Column(
-                      children: [
-                        Image.asset(
-                          'assets/login-title.png',
-                          width: 94.sp,
-                        ),
-                        SizedBox(height: 3.h),
-                        Row(
-                          children: [
-                            Text(
-                              context.l10n.clients,
-                              style: TextStyle(
-                                fontSize: 16.sp,
-                                fontWeight: FontWeight.w700,
-                                color: const Color(0xff434545),
+                return RefreshIndicator(
+                  color: Colors.black,
+                  onRefresh: context.read<HomeCubit>().refresh,
+                  child: SafeArea(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(
+                        vertical: 2.h,
+                        horizontal: 8.w,
+                      ),
+                      child: Column(
+                        children: [
+                          Image.asset(
+                            'assets/login-title.png',
+                            width: 94.sp,
+                          ),
+                          SizedBox(height: 3.h),
+                          Row(
+                            children: [
+                              Text(
+                                context.l10n.clients,
+                                style: TextStyle(
+                                  fontSize: 16.sp,
+                                  fontWeight: FontWeight.w700,
+                                  color: const Color(0xff434545),
+                                ),
                               ),
+                            ],
+                          ),
+                          SizedBox(height: 2.h),
+                          // Row(
+                          //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          //   children: [
+                          //     SizedBox(
+                          //       height: AppSize(context).pixels(42),
+                          //       width: AppSize(context).pixels(220),
+                          //       child: TextFormField(
+                          //         onChanged: (value) {
+                          //           setState(() {
+                          //             query = value;
+                          //             if (value.isEmpty) {
+                          //               clients = state.clients;
+                          //             } else {
+                          //               clients = state.clients
+                          //                   .where(
+                          //                     (client) =>
+                          //                         (client.firstname ?? '')
+                          //                             .toLowerCase()
+                          //                             .contains(
+                          //                               value.toLowerCase(),
+                          //                             ) ||
+                          //                         (client.lastname ?? '')
+                          //                             .toLowerCase()
+                          //                             .contains(
+                          //                               value.toLowerCase(),
+                          //                             ) ||
+                          //                         (client.email ?? '')
+                          //                             .toLowerCase()
+                          //                             .contains(
+                          //                               value.toLowerCase(),
+                          //                             ),
+                          //                   )
+                          //                   .toList();
+                          //             }
+                          //             if (clients.length > 5) {
+                          //               clientsShowed = 5;
+                          //               noMoreClients = false;
+                          //             } else {
+                          //               clientsShowed = clients.length;
+                          //               noMoreClients = true;
+                          //             }
+                          //           });
+                          //         },
+                          //         decoration: InputDecoration(
+                          //           hintText: '${context.l10n.search}...',
+                          //           fillColor: Colors.white,
+                          //           filled: true,
+                          //           prefixIcon: const Icon(
+                          //             Icons.search,
+                          //             color: Color(0xff434545),
+                          //           ),
+                          //           contentPadding: EdgeInsets.symmetric(
+                          //             vertical: AppSize(context).pixels(12),
+                          //           ),
+                          //           focusedBorder: OutlineInputBorder(
+                          //             borderSide: BorderSide(
+                          //               color: Colors.black.withOpacity(0.75),
+                          //               width: 1.5,
+                          //             ),
+                          //             borderRadius: BorderRadius.circular(
+                          //               AppSize(context).pixels(70),
+                          //             ),
+                          //           ),
+                          //           border: OutlineInputBorder(
+                          //             borderSide: BorderSide(
+                          //               color:
+                          //                   const Color(0xff1F1D2B).withOpacity(
+                          //                 0.61,
+                          //               ),
+                          //             ),
+                          //             borderRadius: BorderRadius.circular(
+                          //               AppSize(context).pixels(70),
+                          //             ),
+                          //           ),
+                          //         ),
+                          //       ),
+                          //     ),
+                          //     CustomButton(
+                          //       height: 25.sp,
+                          //       // width: 80.sp,
+                          //       title: context.l10n.addNew,
+                          //       onPressed: () async {
+                          //         await showDialog<Client?>(
+                          //           barrierColor: Colors.transparent,
+                          //           context: context,
+                          //           builder: (BuildContext innerContext) {
+                          //             return const ClientModal();
+                          //           },
+                          //         ).then((client) {
+                          //           if (client != null) {
+                          //             context
+                          //                 .read<HomeCubit>()
+                          //                 .createClient(client);
+                          //           }
+                          //         });
+                          //       },
+                          //     ),
+                          //   ],
+                          // ),
+                          // SizedBox(height: 2.h),
+                          Expanded(
+                            child: ListView.builder(
+                              itemCount: state.clients.length,
+                              itemBuilder: (context, index) {
+                                final client = state.clients[index];
+
+                                return ListTile(
+                                  dense: true,
+                                  title: Text(
+                                    client.firstname ?? 'N/D',
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                  subtitle: Text(client.email ?? 'N/D'),
+                                );
+                                // return ClientCard(
+                                //   client: client,
+                                //   onTap: () async {
+                                //     await showDialog<Client?>(
+                                //       barrierColor: Colors.transparent,
+                                //       context: context,
+                                //       builder: (BuildContext innerContext) {
+                                //         return ClientModal(
+                                //           client: client,
+                                //         );
+                                //       },
+                                //     ).then((client) {
+                                //       if (client != null) {
+                                //         context
+                                //             .read<HomeCubit>()
+                                //             .updateClient(client);
+                                //       }
+                                //     });
+                                //   },
+                                // );
+                              },
                             ),
-                          ],
-                        ),
-                        SizedBox(height: 2.h),
-                        // Row(
-                        //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        //   children: [
-                        //     SizedBox(
-                        //       height: AppSize(context).pixels(42),
-                        //       width: AppSize(context).pixels(220),
-                        //       child: TextFormField(
-                        //         onChanged: (value) {
-                        //           setState(() {
-                        //             query = value;
-                        //             if (value.isEmpty) {
-                        //               clients = state.clients;
-                        //             } else {
-                        //               clients = state.clients
-                        //                   .where(
-                        //                     (client) =>
-                        //                         (client.firstname ?? '')
-                        //                             .toLowerCase()
-                        //                             .contains(
-                        //                               value.toLowerCase(),
-                        //                             ) ||
-                        //                         (client.lastname ?? '')
-                        //                             .toLowerCase()
-                        //                             .contains(
-                        //                               value.toLowerCase(),
-                        //                             ) ||
-                        //                         (client.email ?? '')
-                        //                             .toLowerCase()
-                        //                             .contains(
-                        //                               value.toLowerCase(),
-                        //                             ),
-                        //                   )
-                        //                   .toList();
-                        //             }
-                        //             if (clients.length > 5) {
-                        //               clientsShowed = 5;
-                        //               noMoreClients = false;
-                        //             } else {
-                        //               clientsShowed = clients.length;
-                        //               noMoreClients = true;
-                        //             }
-                        //           });
-                        //         },
-                        //         decoration: InputDecoration(
-                        //           hintText: '${context.l10n.search}...',
-                        //           fillColor: Colors.white,
-                        //           filled: true,
-                        //           prefixIcon: const Icon(
-                        //             Icons.search,
-                        //             color: Color(0xff434545),
-                        //           ),
-                        //           contentPadding: EdgeInsets.symmetric(
-                        //             vertical: AppSize(context).pixels(12),
-                        //           ),
-                        //           focusedBorder: OutlineInputBorder(
-                        //             borderSide: BorderSide(
-                        //               color: Colors.black.withOpacity(0.75),
-                        //               width: 1.5,
-                        //             ),
-                        //             borderRadius: BorderRadius.circular(
-                        //               AppSize(context).pixels(70),
-                        //             ),
-                        //           ),
-                        //           border: OutlineInputBorder(
-                        //             borderSide: BorderSide(
-                        //               color:
-                        //                   const Color(0xff1F1D2B).withOpacity(
-                        //                 0.61,
-                        //               ),
-                        //             ),
-                        //             borderRadius: BorderRadius.circular(
-                        //               AppSize(context).pixels(70),
-                        //             ),
-                        //           ),
-                        //         ),
-                        //       ),
-                        //     ),
-                        //     CustomButton(
-                        //       height: 25.sp,
-                        //       // width: 80.sp,
-                        //       title: context.l10n.addNew,
-                        //       onPressed: () async {
-                        //         await showDialog<Client?>(
-                        //           barrierColor: Colors.transparent,
-                        //           context: context,
-                        //           builder: (BuildContext innerContext) {
-                        //             return const ClientModal();
-                        //           },
-                        //         ).then((client) {
-                        //           if (client != null) {
-                        //             context
-                        //                 .read<HomeCubit>()
-                        //                 .createClient(client);
-                        //           }
-                        //         });
-                        //       },
-                        //     ),
-                        //   ],
-                        // ),
-                      ],
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 );

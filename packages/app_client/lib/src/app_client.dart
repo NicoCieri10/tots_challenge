@@ -40,14 +40,44 @@ class AppClient {
 
     try {
       final responseModel = ResponseModel.fromMap(response);
+
       if (responseModel.success) {
         return AuthUser.fromMap(responseModel.response!);
-      } else {
-        throw DioRequestFailure(
-          responseModel.error!['code'] as int,
-          responseModel.error!['message'] as String,
-        );
       }
+
+      throw DioRequestFailure(
+        responseModel.error!['code'] as int,
+        responseModel.error!['message'] as String,
+      );
+    } on FormatException {
+      throw const SpecifiedTypeNotMatchedException();
+    }
+  }
+
+  /// This method is used to get the [Client] list.
+  Future<List<Client>?> getClients({required String token}) async {
+    const path = '$clientPath/list';
+
+    final response = await _post<JSON>(
+      path,
+      options: {'Authorization': 'Bearer $token'},
+      queryParams: {'page': '1'},
+    );
+
+    try {
+      final responseModel = ResponseModel.fromMap(response);
+
+      if (responseModel.success) {
+        // return (responseModel.response?.data as List<Map<String, dynamic>>)
+        //     .map(Client.fromMap)
+        //     .toList();
+        return [];
+      }
+
+      throw DioRequestFailure(
+        responseModel.error!['code'] as int,
+        responseModel.error!['message'] as String,
+      );
     } on FormatException {
       throw const SpecifiedTypeNotMatchedException();
     }
@@ -68,14 +98,12 @@ class AppClient {
 
     try {
       final responseModel = ResponseModel.fromMap(response);
-      if (responseModel.success) {
-        return Client.fromMap(responseModel.response!);
-      } else {
-        throw DioRequestFailure(
-          responseModel.error!['code'] as int,
-          responseModel.error!['message'] as String,
-        );
-      }
+      if (responseModel.success) return Client.fromMap(responseModel.response!);
+
+      throw DioRequestFailure(
+        responseModel.error!['code'] as int,
+        responseModel.error!['message'] as String,
+      );
     } on FormatException {
       throw const SpecifiedTypeNotMatchedException();
     }
@@ -96,14 +124,39 @@ class AppClient {
 
     try {
       final responseModel = ResponseModel.fromMap(response);
-      if (responseModel.success) {
-        return Client.fromMap(responseModel.response!);
-      } else {
-        throw DioRequestFailure(
-          responseModel.error!['code'] as int,
-          responseModel.error!['message'] as String,
-        );
-      }
+
+      if (responseModel.success) return Client.fromMap(responseModel.response!);
+
+      throw DioRequestFailure(
+        responseModel.error!['code'] as int,
+        responseModel.error!['message'] as String,
+      );
+    } on FormatException {
+      throw const SpecifiedTypeNotMatchedException();
+    }
+  }
+
+  /// This method is used to remove a [Client].
+  Future<bool> removeClient({
+    required String id,
+    required String token,
+  }) async {
+    final path = '$clientPath/remove/$id';
+
+    final response = await _post<JSON>(
+      path,
+      options: {'Authorization': 'Bearer $token'},
+    );
+
+    try {
+      final responseModel = ResponseModel.fromMap(response);
+
+      if (responseModel.success) return true;
+
+      throw DioRequestFailure(
+        responseModel.error!['code'] as int,
+        responseModel.error!['message'] as String,
+      );
     } on FormatException {
       throw const SpecifiedTypeNotMatchedException();
     }

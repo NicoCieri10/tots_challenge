@@ -15,7 +15,8 @@ class DataPersistenceRepository {
 
     Hive
       ..init(directory.path)
-      ..registerAdapter(AuthUserAdapter());
+      ..registerAdapter(AuthUserAdapter())
+      ..registerAdapter(ClientAdapter());
 
     final completers = <Completer<void>>[];
     for (final key in boxKeys) {
@@ -36,6 +37,9 @@ class DataPersistenceRepository {
   /// Get the User box.
   Box<dynamic> get userDataBox => Hive.box<dynamic>(userDataKey);
 
+  /// Get the Clients box.
+  Box<dynamic> get clientsBox => Hive.box<dynamic>(clientsKey);
+
   /// Whether the user is logged in or not.
   bool get isLoggedIn =>
       userSessionBox.get(BoxKeys.isLoggedIn) as bool? ?? false;
@@ -51,6 +55,13 @@ class DataPersistenceRepository {
   Future<void> setUser({AuthUser? user}) async =>
       userDataBox.put(BoxKeys.userData, user);
 
+  /// Get the clients data.
+  List<Client>? get clients => clientsBox.get(BoxKeys.clients) as List<Client>?;
+
+  /// Updates the clients data.
+  Future<void> setClients({List<Client>? clients}) async =>
+      clientsBox.put(BoxKeys.clients, clients);
+
   /// Get the bearer token.
   String? get token => userSessionBox.get(BoxKeys.token) as String?;
 
@@ -62,6 +73,7 @@ class DataPersistenceRepository {
   Future<void> logout() async {
     await userSessionBox.clear();
     await userDataBox.clear();
+    await clientsBox.clear();
   }
 
   /// The key of the user session box.
@@ -70,10 +82,14 @@ class DataPersistenceRepository {
   /// The key of the user box.
   static const userDataKey = 'user_data';
 
+  /// The key of the clients box.
+  static const clientsKey = 'clients';
+
   /// The list of all the box keys.
   static const boxKeys = {
     userSessionKey,
     userDataKey,
+    clientsKey,
   };
 }
 
@@ -87,4 +103,7 @@ class BoxKeys {
 
   /// The key to access to the user information.
   static const userData = 'user_data';
+
+  /// The key to access to the clients information.
+  static const clients = 'clients';
 }

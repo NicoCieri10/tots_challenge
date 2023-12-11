@@ -68,7 +68,7 @@ class _ClientModalState extends State<ClientModal> {
         child: Form(
           key: _formKey,
           child: Container(
-            height: 380.sp,
+            height: 410.sp,
             width: 220.sp,
             padding: EdgeInsets.symmetric(
               horizontal: 15.sp,
@@ -173,7 +173,7 @@ class _ButtonsRow extends StatelessWidget {
           onPressed: onPressed,
           height: 40,
           child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 15.w),
+            padding: EdgeInsets.symmetric(horizontal: 10.w),
             child: Text(
               context.l10n.save,
               style: TextStyle(

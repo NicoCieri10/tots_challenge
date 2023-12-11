@@ -10,6 +10,7 @@ dependencies:
   app_client:
     path: packages/app_client
   bloc: ^8.1.2
+  cupertino_icons: ^1.0.0
   data_persistence:
     path: packages/data_persistence
   dio: ^5.4.0

@@ -138,39 +138,18 @@ class _HomeBody extends StatelessWidget {
                     ],
                   ),
                   SizedBox(height: 2.h),
-                  Expanded(
-                    child: ShaderMask(
-                      shaderCallback: (Rect rect) {
-                        return const LinearGradient(
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          colors: [
-                            Colors.white,
-                            Colors.transparent,
-                            Colors.transparent,
-                          ],
-                          stops: [
-                            0.0,
-                            0.04,
-                            0.6,
-                          ],
-                        ).createShader(rect);
-                      },
-                      blendMode: BlendMode.dstOut,
-                      child: CustomScrollView(
-                        slivers: [
-                          SliverPersistentHeader(
-                            delegate: ClientsSearchHeader(state),
-                            floating: true,
-                          ),
-                          if (!state.isFailure) _ClientList(state: state)
-                          // else
-                          //   const _RefreshWidget(),
-                          // const _LoadMoreButton(),
-                        ],
-                      ),
-                    ),
+                  const Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      _SearchWidget(),
+                      _NewClientButton(),
+                    ],
                   ),
+                  if (!state.isFailure)
+                    _ClientList(state: state)
+                  else
+                    const _RefreshWidget(),
+                  const _LoadMoreButton(),
                 ],
               ),
             ),
@@ -179,42 +158,6 @@ class _HomeBody extends StatelessWidget {
       },
     );
   }
-}
-
-class ClientsSearchHeader extends SliverPersistentHeaderDelegate {
-  const ClientsSearchHeader(this.homeState);
-
-  final HomeState homeState;
-
-  @override
-  Widget build(
-    BuildContext context,
-    double shrinkOffset,
-    bool overlapsContent,
-  ) {
-    return Column(
-      children: [
-        SizedBox(height: 2.h),
-        const Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            _SearchWidget(),
-            _NewClientButton(),
-          ],
-        ),
-      ],
-    );
-  }
-
-  @override
-  double get maxExtent => 80;
-
-  @override
-  double get minExtent => 80;
-
-  @override
-  bool shouldRebuild(covariant SliverPersistentHeaderDelegate oldDelegate) =>
-      true;
 }
 
 class _LoadMoreButton extends StatelessWidget {
@@ -345,34 +288,37 @@ class _ClientList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // if (state.isAttempting || state.isLoadingMore) {
-    //   return const Expanded(
-    //     child: Center(
-    //       child: CircularProgressIndicator(color: Colors.black),
-    //     ),
-    //   );
-    // }
+    if (state.isAttempting || state.isLoadingMore) {
+      return const Expanded(
+        child: Center(
+          child: CircularProgressIndicator(color: Colors.black),
+        ),
+      );
+    }
 
     final clients = state.filteredClients;
 
-    // if (clients.isEmpty) {
-    //   return Expanded(
-    //     child: Center(
-    //       child: SingleChildScrollView(
-    //         physics: const AlwaysScrollableScrollPhysics(),
-    //         child: Text(
-    //           context.l10n.noClientsFound,
-    //           style: TextStyle(fontSize: 20.sp),
-    //         ),
-    //       ),
-    //     ),
-    //   );
-    // }
+    if (clients.isEmpty) {
+      return Expanded(
+        child: Center(
+          child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            child: Text(
+              context.l10n.noClientsFound,
+              style: TextStyle(fontSize: 20.sp),
+            ),
+          ),
+        ),
+      );
+    }
 
-    return SliverList.builder(
-      itemCount: clients.length * 3,
-      itemBuilder: (context, index) =>
-          ClientCard((clients + clients + clients)[index]),
+    return Expanded(
+      child: ListView.builder(
+        physics: const AlwaysScrollableScrollPhysics(),
+        shrinkWrap: true,
+        itemCount: clients.length,
+        itemBuilder: (context, index) => ClientCard(clients[index]),
+      ),
     );
   }
 }

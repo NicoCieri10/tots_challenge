@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:tots_challenge/configs/configs.dart';
 
 /// Client to make requests to the API
 class DioClient {
@@ -7,7 +8,7 @@ class DioClient {
 
   Dio instance() {
     final options = BaseOptions(
-      baseUrl: 'https://agency-coda.uc.r.appspot.com',
+      baseUrl: Env.baseUrl ?? '',
       connectTimeout: const Duration(seconds: 10),
       receiveTimeout: const Duration(seconds: 6),
     );

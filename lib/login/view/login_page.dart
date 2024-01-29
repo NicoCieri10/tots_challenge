@@ -201,9 +201,7 @@ class _LoginImage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 7),
-      child: Image.asset(
-        'assets/login-title.png',
-      ),
+      child: Image.asset('assets/login-title.png'),
     );
   }
 }

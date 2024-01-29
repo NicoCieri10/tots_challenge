@@ -29,52 +29,50 @@ class _AppState extends State<App> {
   void initState() {
     super.initState();
     InjectorService.init();
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.portraitUp,
-      DeviceOrientation.portraitDown,
-    ]);
-    SystemChrome.setSystemUIOverlayStyle(
-      const SystemUiOverlayStyle(
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await SystemChrome.setPreferredOrientations([
+        DeviceOrientation.portraitUp,
+        DeviceOrientation.portraitDown,
+      ]);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnnotatedRegion(
+      value: const SystemUiOverlayStyle(
         systemNavigationBarIconBrightness: Brightness.dark,
         statusBarIconBrightness: Brightness.dark, // For Android (dark icons)
         statusBarBrightness: Brightness.dark, // For iOS (dark icons)
         systemNavigationBarColor: Colors.white,
         statusBarColor: Colors.transparent,
       ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Sizer(
-      builder: (_, __, ___) => MultiRepositoryProvider(
-        providers: [
-          RepositoryProvider<AppClient>(
-            create: (context) => AppClient(dioClient: getIt()),
+      child: Sizer(
+        builder: (_, __, ___) => MultiRepositoryProvider(
+          providers: [
+            RepositoryProvider<AppClient>(
+              create: (context) => AppClient(dioClient: getIt()),
+            ),
+            RepositoryProvider.value(value: widget.dataPersistenceRepository),
+          ],
+          child: MaterialApp.router(
+            theme: ThemeData(
+              fontFamily: 'DMSans',
+              useMaterial3: true,
+            ),
+            debugShowCheckedModeBanner: false,
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            routerDelegate: _router.routerDelegate,
+            routeInformationProvider: _router.routeInformationProvider,
+            routeInformationParser: _router.routeInformationParser,
           ),
-          RepositoryProvider<DataPersistenceRepository>(
-            create: (context) => widget.dataPersistenceRepository,
-          ),
-        ],
-        child: MaterialApp.router(
-          theme: ThemeData(
-            fontFamily: 'DMSans',
-            useMaterial3: true,
-          ),
-          debugShowCheckedModeBanner: false,
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-          supportedLocales: AppLocalizations.supportedLocales,
-          routerDelegate: _router.routerDelegate,
-          routeInformationProvider: _router.routeInformationProvider,
-          routeInformationParser: _router.routeInformationParser,
         ),
       ),
     );
   }
 
   GoRouter router(BuildContext context) {
-    final isLoggedIn = widget.dataPersistenceRepository.isLoggedIn;
-
     return GoRouter(
       redirect: (context, state) {
         final isLoggedIn = widget.dataPersistenceRepository.isLoggedIn;
@@ -82,16 +80,14 @@ class _AppState extends State<App> {
 
         return null;
       },
-      initialLocation: isLoggedIn ? HomePage.route : LoginPage.route,
+      initialLocation: HomePage.route,
       routes: <GoRoute>[
         GoRoute(
           path: LoginPage.route,
-          name: LoginPage.route,
           builder: (context, state) => LoginPage(key: state.pageKey),
         ),
         GoRoute(
           path: HomePage.route,
-          name: HomePage.route,
           builder: (context, state) => HomePage(key: state.pageKey),
         ),
       ],

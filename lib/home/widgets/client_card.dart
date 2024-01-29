@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:app_client/app_client.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -52,39 +54,44 @@ class _MenuButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final cubit = context.read<HomeCubit>();
+    Future<void> onSelected(PopupOptions option) async {
+      final cubit = context.read<HomeCubit>();
+
+      if (option == PopupOptions.edit) {
+        final newClient = await showDialog<Client?>(
+          context: context,
+          builder: (_) => ClientModal(client: client),
+        );
+
+        if (newClient != null) unawaited(cubit.updateClient(newClient));
+
+        return;
+      }
+
+      final delete = await showDialog<bool?>(
+        context: context,
+        builder: (_) => AlertDialog(
+          title: Text(context.l10n.deleteClient),
+          content: Text(context.l10n.deleteClientQuestion),
+          actions: [
+            TextButton(
+              onPressed: context.pop,
+              child: Text(context.l10n.cancel),
+            ),
+            TextButton(
+              onPressed: () => context.pop(true),
+              child: Text(context.l10n.delete),
+            ),
+          ],
+        ),
+      );
+
+      if (delete ?? false) unawaited(cubit.deleteClient(client));
+    }
+
     return PopupMenuButton(
       color: Colors.black,
-      onSelected: (PopupOptions option) async {
-        if (option == PopupOptions.edit) {
-          await showDialog<Client?>(
-            context: context,
-            builder: (_) => ClientModal(client: client),
-          ).then((client) {
-            if (client != null) cubit.updateClient(client);
-          });
-        } else {
-          await showDialog<bool?>(
-            context: context,
-            builder: (_) => AlertDialog(
-              title: Text(context.l10n.deleteClient),
-              content: Text(context.l10n.deleteClientQuestion),
-              actions: [
-                TextButton(
-                  onPressed: context.pop,
-                  child: Text(context.l10n.cancel),
-                ),
-                TextButton(
-                  onPressed: () => context.pop(true),
-                  child: Text(context.l10n.delete),
-                ),
-              ],
-            ),
-          ).then((delete) {
-            if (delete ?? false) cubit.deleteClient(client);
-          });
-        }
-      },
+      onSelected: onSelected,
       itemBuilder: (context) => [
         PopupMenuItem<PopupOptions>(
           height: 26.sp,

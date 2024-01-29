@@ -20,9 +20,8 @@ class LoginCubit extends Cubit<LoginState> {
     required String email,
     required String password,
   }) async {
-    emit(
-      state.copyWith(status: LoginStatus.attempting),
-    );
+    emit(state.copyWith(status: LoginStatus.attempting));
+
     try {
       final authUser = await _appClient.login(
         email: email,
@@ -33,21 +32,15 @@ class LoginCubit extends Cubit<LoginState> {
       await _dataPersistenceRepository.setUser(user: authUser);
       await _dataPersistenceRepository.setToken(token: authUser.accessToken);
 
-      emit(
-        state.copyWith(status: LoginStatus.success),
-      );
+      emit(state.copyWith(status: LoginStatus.success));
     } catch (e) {
-      emit(
-        state.copyWith(status: LoginStatus.badCredentials),
-      );
+      emit(state.copyWith(status: LoginStatus.badCredentials));
     }
   }
 
   Future<void> logout() async {
     await _dataPersistenceRepository.logout();
 
-    emit(
-      state.copyWith(status: LoginStatus.initial),
-    );
+    emit(state.copyWith(status: LoginStatus.initial));
   }
 }

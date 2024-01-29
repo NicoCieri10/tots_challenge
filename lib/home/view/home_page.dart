@@ -7,6 +7,7 @@ import 'package:sizer/sizer.dart';
 import 'package:tots_challenge/home/cubit/home_cubit.dart';
 import 'package:tots_challenge/home/widgets/widgets.dart';
 import 'package:tots_challenge/l10n/l10n.dart';
+import 'package:tots_challenge/login/login.dart';
 import 'package:ui/ui.dart';
 
 class HomePage extends StatelessWidget {
@@ -20,7 +21,7 @@ class HomePage extends StatelessWidget {
       create: (context) => HomeCubit(
         appClient: context.read<AppClient>(),
         dataPersistenceRepository: context.read<DataPersistenceRepository>(),
-      )..init(),
+      ),
       child: const HomeView(),
     );
   }
@@ -52,11 +53,26 @@ class _HomeViewState extends State<HomeView> {
           onPressed: () => onLogout(context),
           child: const Icon(Icons.exit_to_app_rounded),
         ),
-        body: const Stack(
-          children: [
-            _HomeBackground(),
-            _HomeBody(),
+        body: const BlurBackground(
+          elements: [
+            BackgroundElement(
+              svg: 'assets/top-left-vector.svg',
+              alignment: Alignment.topLeft,
+            ),
+            BackgroundElement(
+              svg: 'assets/center-right-vector.svg',
+              alignment: Alignment(1, -0.3),
+            ),
+            BackgroundElement(
+              svg: 'assets/bottom-right-vector.svg',
+              alignment: Alignment.bottomRight,
+            ),
+            BackgroundElement(
+              svg: 'assets/bottom-left-vector.svg',
+              alignment: Alignment.bottomLeft,
+            ),
           ],
+          child: _HomeBody(),
         ),
       ),
     );
@@ -65,7 +81,7 @@ class _HomeViewState extends State<HomeView> {
   Future<void> onLogout(BuildContext context) async {
     await context.read<HomeCubit>().logout();
     if (!mounted) return;
-    context.goNamed('/login');
+    context.go(LoginPage.route);
   }
 }
 
@@ -100,7 +116,7 @@ class _HomeBody extends StatelessWidget {
                     'assets/login-title.png',
                     width: 94.sp,
                   ),
-                  SizedBox(height: 2.5.h),
+                  SizedBox(height: 0.5.h),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -122,18 +138,39 @@ class _HomeBody extends StatelessWidget {
                     ],
                   ),
                   SizedBox(height: 2.h),
-                  const Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      _SearchWidget(),
-                      _NewClientButton(),
-                    ],
+                  Expanded(
+                    child: ShaderMask(
+                      shaderCallback: (Rect rect) {
+                        return const LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            Colors.white,
+                            Colors.transparent,
+                            Colors.transparent,
+                          ],
+                          stops: [
+                            0.0,
+                            0.04,
+                            0.6,
+                          ],
+                        ).createShader(rect);
+                      },
+                      blendMode: BlendMode.dstOut,
+                      child: CustomScrollView(
+                        slivers: [
+                          SliverPersistentHeader(
+                            delegate: ClientsSearchHeader(state),
+                            floating: true,
+                          ),
+                          if (!state.isFailure) _ClientList(state: state)
+                          // else
+                          //   const _RefreshWidget(),
+                          // const _LoadMoreButton(),
+                        ],
+                      ),
+                    ),
                   ),
-                  if (!state.isFailure)
-                    _ClientList(state: state)
-                  else
-                    const _RefreshWidget(),
-                  const _LoadMoreButton(),
                 ],
               ),
             ),
@@ -142,6 +179,42 @@ class _HomeBody extends StatelessWidget {
       },
     );
   }
+}
+
+class ClientsSearchHeader extends SliverPersistentHeaderDelegate {
+  const ClientsSearchHeader(this.homeState);
+
+  final HomeState homeState;
+
+  @override
+  Widget build(
+    BuildContext context,
+    double shrinkOffset,
+    bool overlapsContent,
+  ) {
+    return Column(
+      children: [
+        SizedBox(height: 2.h),
+        const Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            _SearchWidget(),
+            _NewClientButton(),
+          ],
+        ),
+      ],
+    );
+  }
+
+  @override
+  double get maxExtent => 80;
+
+  @override
+  double get minExtent => 80;
+
+  @override
+  bool shouldRebuild(covariant SliverPersistentHeaderDelegate oldDelegate) =>
+      true;
 }
 
 class _LoadMoreButton extends StatelessWidget {
@@ -211,12 +284,11 @@ class _NewClientButton extends StatelessWidget {
           ),
         ),
         onPressed: () async {
-          await showDialog<Client?>(
+          final newClinet = await showDialog<Client?>(
             context: context,
             builder: (_) => const ClientModal(),
-          ).then((client) {
-            if (client != null) cubit.createClient(client);
-          });
+          );
+          if (newClinet != null) await cubit.createClient(newClinet);
         },
       ),
     );
@@ -273,37 +345,34 @@ class _ClientList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (state.isAttempting || state.isLoadingMore) {
-      return const Expanded(
-        child: Center(
-          child: CircularProgressIndicator(color: Colors.black),
-        ),
-      );
-    }
+    // if (state.isAttempting || state.isLoadingMore) {
+    //   return const Expanded(
+    //     child: Center(
+    //       child: CircularProgressIndicator(color: Colors.black),
+    //     ),
+    //   );
+    // }
 
     final clients = state.filteredClients;
 
-    if (clients.isEmpty) {
-      return Expanded(
-        child: Center(
-          child: SingleChildScrollView(
-            physics: const AlwaysScrollableScrollPhysics(),
-            child: Text(
-              context.l10n.noClientsFound,
-              style: TextStyle(fontSize: 20.sp),
-            ),
-          ),
-        ),
-      );
-    }
+    // if (clients.isEmpty) {
+    //   return Expanded(
+    //     child: Center(
+    //       child: SingleChildScrollView(
+    //         physics: const AlwaysScrollableScrollPhysics(),
+    //         child: Text(
+    //           context.l10n.noClientsFound,
+    //           style: TextStyle(fontSize: 20.sp),
+    //         ),
+    //       ),
+    //     ),
+    //   );
+    // }
 
-    return Expanded(
-      child: ListView.builder(
-        physics: const AlwaysScrollableScrollPhysics(),
-        shrinkWrap: true,
-        itemCount: clients.length,
-        itemBuilder: (context, index) => ClientCard(clients[index]),
-      ),
+    return SliverList.builder(
+      itemCount: clients.length * 3,
+      itemBuilder: (context, index) =>
+          ClientCard((clients + clients + clients)[index]),
     );
   }
 }
@@ -346,34 +415,6 @@ class _RefreshWidget extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
-}
-
-class _HomeBackground extends StatelessWidget {
-  const _HomeBackground();
-
-  @override
-  Widget build(BuildContext context) {
-    return const BlurBackground(
-      elements: [
-        BackgroundElement(
-          svg: 'assets/top-left-vector.svg',
-          alignment: Alignment.topLeft,
-        ),
-        BackgroundElement(
-          svg: 'assets/center-right-vector.svg',
-          alignment: Alignment(1, -0.3),
-        ),
-        BackgroundElement(
-          svg: 'assets/bottom-right-vector.svg',
-          alignment: Alignment.bottomRight,
-        ),
-        BackgroundElement(
-          svg: 'assets/bottom-left-vector.svg',
-          alignment: Alignment.bottomLeft,
-        ),
-      ],
     );
   }
 }

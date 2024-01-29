@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sizer/sizer.dart';
 
 class CustomButton extends StatelessWidget {
   const CustomButton({
@@ -27,9 +28,16 @@ class CustomButton extends StatelessWidget {
           color: const Color(0xFF0D1111),
           borderRadius: BorderRadius.circular(34),
         ),
-        child: loading
-            ? const CircularProgressIndicator(color: Colors.white)
-            : child,
+        child: !loading
+            ? child
+            : SizedBox(
+                height: 20.sp,
+                width: 20.sp,
+                child: CircularProgressIndicator(
+                  color: Colors.white,
+                  strokeWidth: 2.sp,
+                ),
+              ),
       ),
     );
   }

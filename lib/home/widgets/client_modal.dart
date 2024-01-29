@@ -7,8 +7,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:sizer/sizer.dart';
-import 'package:tots_challenge/common/common.dart';
 import 'package:tots_challenge/l10n/l10n.dart';
+import 'package:tots_challenge/util/util.dart';
 import 'package:ui/ui.dart';
 
 class ClientModal extends StatefulWidget {
@@ -61,6 +61,7 @@ class _ClientModalState extends State<ClientModal> {
   Widget build(BuildContext context) {
     final clientNull = widget.client == null;
     final focus = FocusScope.of(context);
+
     return Center(
       child: Dialog(
         backgroundColor: Colors.transparent,
@@ -94,7 +95,7 @@ class _ClientModalState extends State<ClientModal> {
                 CustomTextField(
                   controller: _firstNameController,
                   hintText: context.l10n.firstName,
-                  validator: (value) => Validators.emptyFieldValidator(
+                  validator: (value) => emptyFieldValidator(
                     context: context,
                     value: value,
                   ),
@@ -105,7 +106,7 @@ class _ClientModalState extends State<ClientModal> {
                   controller: _lastNameController,
                   focusNode: lastnameFocus,
                   hintText: context.l10n.lastName,
-                  validator: (value) => Validators.emptyFieldValidator(
+                  validator: (value) => emptyFieldValidator(
                     context: context,
                     value: value,
                   ),
@@ -117,7 +118,7 @@ class _ClientModalState extends State<ClientModal> {
                   focusNode: emailFocus,
                   controller: _emailController,
                   hintText: context.l10n.emailAddress,
-                  validator: (value) => Validators.validateEmail(
+                  validator: (value) => validateEmail(
                     context: context,
                     email: value,
                   ),

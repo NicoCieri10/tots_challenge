@@ -12,17 +12,20 @@ class HomeCubit extends Cubit<HomeState> {
     required DataPersistenceRepository dataPersistenceRepository,
   })  : _appClient = appClient,
         _dataPersistenceRepository = dataPersistenceRepository,
-        super(const HomeState());
+        super(const HomeState()) {
+    _loadClients();
+  }
 
   final DataPersistenceRepository _dataPersistenceRepository;
   final AppClient _appClient;
+  final InternetConnectionChecker _internetConnectionChecker =
+      InternetConnectionChecker();
 
-  Future<void> init() async {
+  Future<void> _loadClients() async {
     emit(state.copyWith(status: HomeStatus.attempting));
 
     try {
-      final result = await InternetConnectionChecker().hasConnection;
-
+      final result = await _internetConnectionChecker.hasConnection;
       if (result) return await getClients();
 
       final clients = _dataPersistenceRepository.clients;
@@ -41,7 +44,7 @@ class HomeCubit extends Cubit<HomeState> {
 
   Future<void> refresh() async {
     emit(const HomeState());
-    await init();
+    await _loadClients();
   }
 
   Future<void> logout() async => _dataPersistenceRepository.logout();
@@ -66,7 +69,7 @@ class HomeCubit extends Cubit<HomeState> {
         ),
       );
     } catch (_) {
-      await InternetConnectionChecker().hasConnection
+      await _internetConnectionChecker.hasConnection
           ? emit(state.copyWith(status: HomeStatus.failure))
           : emit(state.copyWith(status: HomeStatus.offline));
     }
@@ -74,9 +77,7 @@ class HomeCubit extends Cubit<HomeState> {
 
   Future<void> getMoreClients(int page) async {
     if (state.isOffline) return;
-    emit(
-      state.copyWith(status: HomeStatus.loadingMore),
-    );
+    emit(state.copyWith(status: HomeStatus.loadingMore));
 
     try {
       final newClients = await _appClient.getClients(
@@ -116,7 +117,7 @@ class HomeCubit extends Cubit<HomeState> {
 
       emit(state.copyWith(status: HomeStatus.success));
     } catch (_) {
-      await InternetConnectionChecker().hasConnection
+      await _internetConnectionChecker.hasConnection
           ? emit(state.copyWith(status: HomeStatus.failure))
           : emit(state.copyWith(status: HomeStatus.offline));
     }
@@ -137,7 +138,7 @@ class HomeCubit extends Cubit<HomeState> {
 
       emit(state.copyWith(status: HomeStatus.success));
     } catch (_) {
-      await InternetConnectionChecker().hasConnection
+      await _internetConnectionChecker.hasConnection
           ? emit(state.copyWith(status: HomeStatus.failure))
           : emit(state.copyWith(status: HomeStatus.offline));
     }
@@ -158,7 +159,7 @@ class HomeCubit extends Cubit<HomeState> {
 
       emit(state.copyWith(status: HomeStatus.success));
     } catch (_) {
-      await InternetConnectionChecker().hasConnection
+      await _internetConnectionChecker.hasConnection
           ? emit(state.copyWith(status: HomeStatus.failure))
           : emit(state.copyWith(status: HomeStatus.offline));
     }
